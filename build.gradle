@@ -25,7 +25,7 @@ ext {
     siteUrl = 'https://github.com/KaviPaviTwinsS/Functions'
     gitUrl = 'https://github.com/KaviPaviTwinsS/Functions.git'
 
-    libraryVersion = '1.0.0'
+    libraryVersion = '1.0.1'
 
 
     githubRepository = 'KaviPaviTwinsS/Functions'
