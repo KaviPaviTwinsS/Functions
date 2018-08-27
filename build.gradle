@@ -1,18 +1,43 @@
-apply plugin: 'com.android.library'
-apply plugin: 'com.jfrog.bintray'
-//apply plugin: 'com.github.decendents.android-maven'
-apply plugin: 'com.github.dcendents.android-maven'
-
-
 buildscript {
     repositories {
-        mavenLocal()
         jcenter()
     }
     dependencies {
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:3.1.1"
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4"
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
     }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+ext {
+    bintrayRepo = 'CustomWidget'
+    bintrayName = 'Widget'
+
+    userOrgs ='dofnpt'
+    publishedGroupId = 'Widget'
+    libraryName = 'mylibrary'
+    artifact = 'mylibrary'
+
+    libraryDescription = 'A widget to load View.'
+
+    siteUrl = 'https://github.com/KaviPaviTwinsS/Functions'
+    gitUrl = 'https://github.com/KaviPaviTwinsS/Functions.git'
+
+    libraryVersion = '1.0.0'
+
+
+    githubRepository = 'KaviPaviTwinsS/Functions'
+
+
+    developerId = 'KaviPaviTwinsS'
+    developerName = 'Nandhini'
+    developerEmail = 'kavitha123496@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
 }
 android {
     compileSdkVersion 27
@@ -20,7 +45,7 @@ android {
 
 
     defaultConfig {
-        minSdkVersion 22
+        minSdkVersion 16
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -36,39 +61,111 @@ android {
         }
     }
 
+
+}
+allprojects {
+    repositories {
+        jcenter()
+    }
 }
 
+//
+//subProjects {
+//    tasks.withType(Javadoc).all { enabled = false }
+//}
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:27.1.1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+//    implementation 'com.github.eaglecs:mylibrary-aar:0.0.2'
 }
-ext {
-    bintrayRepo = 'Widget'
-    bintrayName = 'developer.mylibrary'
+group = publishedGroupId
+version = libraryVersion
 
-    publishedGroupId = 'developer.mylibrary'
-    libraryName = 'mylibrary'
-    artifact = 'mylibrary'
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            packaging 'aar'
+            groupId publishedGroupId
+            artifactId artifact
 
-    libraryDescription = 'A widget to load View.'
+            name libraryName
+            description libraryDescription
+            url siteUrl
 
-    libraryVersion = '1.0.0'
+            licenses {
+                license {
+                    name licenseName
+                    url licenseUrl
+                }
+            }
+            developers {
+                developer {
+                    id developerId
+                    name developerName
+                    email developerEmail
+                }
+            }
+            scm {
+                connection gitUrl
+                developerConnection gitUrl
+                url siteUrl
+            }
+        }
+    }
+}
+//
+//task sourcesJar(type: Jar) {
+//    classifier = 'sources'
+//    from android.sourceSets.main.java.srcDirs
+//}
 
-    developerId = 'nandhinin'
-    developerName = 'Nandhini'
-    developerEmail = 'kavitha123496@gmail.com'
+//task javadoc(type: Javadoc) {
+//    source = android.sourceSets.main.java.srcDirs
+//    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+//}
+//
+//task javadocJar(type: Jar, dependsOn: javadoc) {
+//    classifier = 'javadoc'
+//    from javadoc.destinationDir
+//}
 
-    siteUrl = 'https://github.com/KaviPaviTwins'
-    gitUrl = 'https://github.com/KaviPaviTwins/Test.git'
-
-    licenseName = 'The Apache Software License, Version 2.0'
-    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-    allLicenses = ["Apache-2.0"]
+artifacts {
+//    archives javadocJar
+//    archives sourcesJar
 }
 
-apply from: 'https://raw.githubusercontent.com/numetriclabz/jcenter/master/installv.gradle'
-apply from: 'https://raw.githubusercontent.com/numetriclabz/jcenter/master/bintrayv.gradle'
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+
+    configurations = ['archives']
+    pkg {
+        userOrg=userOrgs
+        repo = bintrayRepo
+        name = bintrayName
+        desc = libraryDescription
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = allLicenses
+        dryRun = false
+        publish = true
+        override = false
+        publicDownloadNumbers = true
+        version {
+            desc = libraryDescription
+        }
+    }
+}
+//apply from: 'https://raw.githubusercontent.com/JoaquimLey/jcenter-config/master/deploy.gradle'
+
+
+//apply from: 'https://raw.githubusercontent.com/JoaquimLey/jcenter-config/master/deploy.gradle'
+
+apply from: 'https://raw.githubusercontent.com/nisrulz/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nisrulz/JCenter/master/bintrayv1.gradle'
